@@ -112,11 +112,14 @@ async function sendGiftMessage(message, recipient, productInfo) {
     // Prepare the gift message payload
     const payload = {
       message: message,
-      recipient_email: recipient.email,
-      recipient_phone: recipient.phone,
-      product_id: productInfo.product_id,
-      variant_id: productInfo.variant_id,
-      delivery_methods: ['email', 'sms'] // Giftnote sends both together
+      recipient: {
+        email: recipient.email,
+        phone: recipient.phone
+      },
+      product: {
+        id: productInfo.product_id,
+        variant_id: productInfo.variant_id
+      }
     };
 
     console.log('📤 Sending gift message via Giftnote API...', {
@@ -125,7 +128,7 @@ async function sendGiftMessage(message, recipient, productInfo) {
       recipient_phone: recipient.phone ? 'provided' : 'not provided'
     });
 
-    const response = await fetch(`${GIFTNOTE_CONFIG.baseUrl}/messages/v0/`, {
+    const response = await fetch(`${GIFTNOTE_CONFIG.baseUrl}/gift/v0/`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
