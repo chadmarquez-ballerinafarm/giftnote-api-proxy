@@ -142,10 +142,30 @@ async function sendGiftMessage(message, recipient, productInfo) {
       if (response.status === 429) {
         throw new Error('Quota exceeded. Please try again later.');
       }
+      
+      // Get the response text to see what's actually being returned
+      const responseText = await response.text();
+      console.error('❌ Giftnote API Error Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        body: responseText.substring(0, 500) // First 500 chars
+      });
+      
       throw new Error(`API request failed: ${response.status} ${response.statusText}`);
     }
 
-    const result = await response.json();
+    const responseText = await response.text();
+    console.log('📥 Giftnote API Response:', responseText.substring(0, 200));
+    
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('❌ Failed to parse Giftnote API response as JSON:', parseError);
+      console.error('❌ Raw response:', responseText);
+      throw new Error(`Invalid JSON response from Giftnote API: ${parseError.message}`);
+    }
     
     console.log('✅ Gift message sent successfully');
     return {
