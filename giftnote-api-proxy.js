@@ -62,8 +62,11 @@ async function getAccessToken() {
 
     const data = await response.json();
     
-    accessToken = data.access_token;
-    tokenExpiry = Date.now() + (data.expires_in * 1000) - 60000; // 1 minute buffer
+    // Handle Giftnote's response format with data wrapper
+    const tokenData = data.data || data;
+    
+    accessToken = tokenData.access_token;
+    tokenExpiry = Date.now() + (tokenData.expires_in * 1000) - 60000; // 1 minute buffer
     
     console.log('✅ New access token obtained');
     return accessToken;
